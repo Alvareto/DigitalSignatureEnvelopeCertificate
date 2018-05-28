@@ -31,7 +31,7 @@ namespace DigitalSignature.Web.Models
 
         protected double GetNumberOfLines(int length)
         {
-            double numLines = (double)length / Constants.ROW__CHARACTER_COUNT;
+            double numLines = (double) length / Constants.ROW__CHARACTER_COUNT;
             if (Math.Truncate(numLines) < numLines)
                 numLines++;
 

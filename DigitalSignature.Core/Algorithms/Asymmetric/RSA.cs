@@ -6,7 +6,6 @@ namespace DigitalSignature.Core.Algorithms.Asymmetric
     public class RSA : IAsymmetricCryptoAlgorithm
     {
         protected readonly RSACryptoServiceProvider Algorithm;
-        public byte[] PrivateKey { get; set; }
 
         public RSA(int keySize)
         {
@@ -14,6 +13,8 @@ namespace DigitalSignature.Core.Algorithms.Asymmetric
             //RSAParameters publicKey = Algorithm.ExportParameters(false);
             //RSAParameters privateKey = Algorithm.ExportParameters(true);
         }
+
+        public byte[] PrivateKey { get; set; }
 
         public byte[] Encrypt(byte[] text)
         {

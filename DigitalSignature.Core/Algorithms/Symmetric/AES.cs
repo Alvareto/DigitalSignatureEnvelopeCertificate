@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 
 namespace DigitalSignature.Core.Algorithms.Symmetric
@@ -7,12 +6,6 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
     public class AES : ISymmetricCryptoAlgorithm
     {
         protected readonly AesCryptoServiceProvider Algorithm;
-
-        public byte[] PrivateKey
-        {
-            get => Algorithm.Key;
-            set => Algorithm.Key = value;
-        }
 
         public AES(int keySize, CipherMode mode)
         {
@@ -35,6 +28,12 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
             //string roundtrip = DecryptStringFromBytes_Aes(encrypted, myAes.Key, myAes.IV);
         }
 
+        public byte[] PrivateKey
+        {
+            get => Algorithm.Key;
+            set => Algorithm.Key = value;
+        }
+
         public byte[] Encrypt(byte[] Data)
         {
             // https://msdn.microsoft.com/en-us/library/system.security.cryptography.aescryptoserviceprovider(v=vs.110).aspx
@@ -52,9 +51,9 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
                 var encryptor = encryptAlgorithm.CreateEncryptor(encryptAlgorithm.Key, encryptAlgorithm.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
+                using (var msEncrypt = new MemoryStream())
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
                         // Write the byte array to the crypto stream and flush it.
                         csEncrypt.Write(Data, 0, Data.Length);
@@ -75,7 +74,7 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
         {
             // https://msdn.microsoft.com/en-us/library/system.security.cryptography.aescryptoserviceprovider(v=vs.110).aspx
 
-            byte[] decrypted = new byte[Data.Length];
+            var decrypted = new byte[Data.Length];
 
             // Create an AesCryptoServiceProvider object 
             // with the specified key and IV.
@@ -88,9 +87,9 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
                 var decryptor = decryptAlgorithm.CreateEncryptor(decryptAlgorithm.Key, decryptAlgorithm.IV);
 
                 // Create the streams used for encryption.
-                using (MemoryStream msDecrypt = new MemoryStream(Data))
+                using (var msDecrypt = new MemoryStream(Data))
                 {
-                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
                         // Read the decrypted bytes from the decrypting stream
                         csDecrypt.Read(decrypted, 0, decrypted.Length);

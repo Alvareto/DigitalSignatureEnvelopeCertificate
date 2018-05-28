@@ -1,8 +1,8 @@
 ﻿namespace DigitalSignature.Core.Algorithms.Asymmetric
 {
     /// <summary>
-    /// Asimetrični kriptosustav: RSA i ElGamal. 
-    /// Za svaki algoritam ponuditi po 3 različite veličine ključeva.
+    ///     Asimetrični kriptosustav: RSA i ElGamal.
+    ///     Za svaki algoritam ponuditi po 3 različite veličine ključeva.
     /// </summary>
     public enum AsymmetricAlgorithmName
     {

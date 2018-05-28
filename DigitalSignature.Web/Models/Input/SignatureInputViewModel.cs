@@ -10,6 +10,5 @@ namespace DigitalSignature.Web.Models.Input
         public AsymmetricAlgorithmName SelectedAsymmetricAlgorithmName { get; set; }
         public AsymmetricAlgorithmKey SelectedAsymmetricAlgorithmKey { get; set; }
         public HashAlgorithmName SelectedHashAlgorithmName { get; set; }
-
     }
 }

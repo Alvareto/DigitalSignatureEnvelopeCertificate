@@ -5,13 +5,14 @@ namespace DigitalSignature.Core.Algorithms.Hash.SHA2
     public class SHA256 : IHashAlgorithm
     {
         protected readonly SHA256CryptoServiceProvider Algorithm;
-        public HashAlgorithmName AlgorithmName => HashAlgorithmName.SHA256;
-        public object CryptoServiceProvider => Algorithm;
 
         public SHA256()
         {
             Algorithm = new SHA256CryptoServiceProvider();
         }
+
+        public HashAlgorithmName AlgorithmName => HashAlgorithmName.SHA256;
+        public object CryptoServiceProvider => Algorithm;
 
         public byte[] Calculate(byte[] input)
         {

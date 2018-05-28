@@ -7,13 +7,13 @@ namespace DigitalSignature.Core.Envelope
 {
     public class DigitalEnvelope : IDigitalEnvelope
     {
-        protected readonly ISymmetricCryptoAlgorithm _symmetric;
         protected readonly IAsymmetricCryptoAlgorithm _asymmetric;
+        protected readonly ISymmetricCryptoAlgorithm _symmetric;
 
         public DigitalEnvelope(ISymmetricCryptoAlgorithm symmetric, IAsymmetricCryptoAlgorithm asymmetric)
         {
-            this._symmetric = symmetric;
-            this._asymmetric = asymmetric;
+            _symmetric = symmetric;
+            _asymmetric = asymmetric;
         }
 
         public byte[] Key { get; set; }

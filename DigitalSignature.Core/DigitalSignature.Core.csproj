@@ -52,7 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Algorithms\Hash\SHA2\SHA3.cs" />
+    <Compile Include="Algorithms\Hash\SHA3\SHA3.cs" />
     <Compile Include="Algorithms\Symmetric\AES.cs" />
     <Compile Include="Algorithms\Asymmetric\AsymmetricAlgorithmKey.cs" />
     <Compile Include="Algorithms\Asymmetric\AsymmetricAlgorithmName.cs" />

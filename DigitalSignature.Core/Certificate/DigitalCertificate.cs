@@ -10,8 +10,8 @@ namespace DigitalSignature.Core.Certificate
 
         public DigitalCertificate(IDigitalEnvelope envelope, IDigitalSignature signature)
         {
-            this._envelope = envelope;
-            this._signature = signature;
+            _envelope = envelope;
+            _signature = signature;
         }
 
         public byte[] Create(byte[] input)

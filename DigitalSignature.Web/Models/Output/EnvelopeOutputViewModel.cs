@@ -15,6 +15,7 @@ namespace DigitalSignature.Web.Models.Output
         /// File name: - ime datoteke koja se kriptira, čiji se sažetak radi, (opcionalno) ...
         /// </summary>
         public string FileName { get; set; }
+
         /// <summary>
         /// Key length: - duljina ključa u bitovima (heksadecimalno!)
         /// </summary>
@@ -35,10 +36,13 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string KeyLength { get; set; }
 
-        public EnvelopeOutputViewModel() { }
+        public EnvelopeOutputViewModel()
+        {
+        }
 
 
-        public EnvelopeOutputViewModel(byte[] data, byte[] key, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
+        public EnvelopeOutputViewModel(byte[] data, byte[] key, SymmetricAlgorithmName sym,
+            SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Envelope";
             this.EnvelopeData = Convert.ToBase64String(data);
@@ -61,7 +65,8 @@ namespace DigitalSignature.Web.Models.Output
         public override void Write()
         {
             //public static void WriteEnvelope(string FileName, Envelope EnvelopeData, int RSAKeyLength)
-            using (StreamWriter envelopeWriter = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
+            using (StreamWriter envelopeWriter =
+                new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
             {
                 envelopeWriter.WriteLine(Constants.START);
                 envelopeWriter.WriteLine();
@@ -90,14 +95,19 @@ namespace DigitalSignature.Web.Models.Output
                 envelopeWriter.WriteLine();
 
                 envelopeWriter.WriteLine(Constants.ENVELOPE_DATA);
-                double numLines = (double)EnvelopeData.Length / Constants.ROW__CHARACTER_COUNT;
+                double numLines = (double) EnvelopeData.Length / Constants.ROW__CHARACTER_COUNT;
                 if (Math.Truncate(numLines) < numLines) numLines++;
 
                 for (int i = 0; i < Math.Truncate(numLines); i++)
                 {
                     if ((EnvelopeData.Length - (i * Constants.ROW__CHARACTER_COUNT)) < Constants.ROW__CHARACTER_COUNT)
-                        envelopeWriter.WriteLine(Constants.TAB + EnvelopeData.Substring(i * Constants.ROW__CHARACTER_COUNT, (EnvelopeData.Length - i * Constants.ROW__CHARACTER_COUNT)));
-                    else envelopeWriter.WriteLine(Constants.TAB + EnvelopeData.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                        envelopeWriter.WriteLine(Constants.TAB + EnvelopeData.Substring(
+                                                     i * Constants.ROW__CHARACTER_COUNT,
+                                                     (EnvelopeData.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                    else
+                        envelopeWriter.WriteLine(Constants.TAB +
+                                                 EnvelopeData.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                                     Constants.ROW__CHARACTER_COUNT));
                 }
                 envelopeWriter.WriteLine();
 
@@ -105,9 +115,13 @@ namespace DigitalSignature.Web.Models.Output
                 envelopeWriter.WriteLine(Constants.ENVELOPE_KEY);
                 for (int i = 0; i < GetNumberOfLines(EnvelopeCryptKey.Length); i++)
                 {
-                    if ((EnvelopeCryptKey.Length - (i * Constants.ROW__CHARACTER_COUNT)) < Constants.ROW__CHARACTER_COUNT)
-                        envelopeWriter.WriteLine("    " + EnvelopeCryptKey.Substring(i * Constants.ROW__CHARACTER_COUNT, (EnvelopeCryptKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
-                    else envelopeWriter.WriteLine("    " + EnvelopeCryptKey.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                    if ((EnvelopeCryptKey.Length - (i * Constants.ROW__CHARACTER_COUNT)) <
+                        Constants.ROW__CHARACTER_COUNT)
+                        envelopeWriter.WriteLine("    " + EnvelopeCryptKey.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                                     (EnvelopeCryptKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                    else
+                        envelopeWriter.WriteLine("    " + EnvelopeCryptKey.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                                     Constants.ROW__CHARACTER_COUNT));
                 }
 
                 envelopeWriter.WriteLine();
@@ -117,18 +131,20 @@ namespace DigitalSignature.Web.Models.Output
 
         public override void Read()
         {
-            using (StreamReader envelopeStream = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
+            using (StreamReader envelopeStream =
+                new StreamReader(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
             {
                 string currentLine = "";
                 EnvelopeData = "";
                 EnvelopeCryptKey = "";
 
                 while ((envelopeStream.ReadLine()) != Constants.ENVELOPE_DATA) ;
-                while ((currentLine = envelopeStream.ReadLine()) != "") EnvelopeData += currentLine.Substring(Constants.TAB.Length);
+                while ((currentLine = envelopeStream.ReadLine()) != "")
+                    EnvelopeData += currentLine.Substring(Constants.TAB.Length);
 
                 while ((envelopeStream.ReadLine()) != Constants.ENVELOPE_KEY) ;
-                while (((currentLine = envelopeStream.ReadLine()) != Constants.END) && (currentLine != "")) EnvelopeCryptKey += currentLine.Substring(4);
-
+                while (((currentLine = envelopeStream.ReadLine()) != Constants.END) && (currentLine != ""))
+                    EnvelopeCryptKey += currentLine.Substring(4);
             }
         }
     }

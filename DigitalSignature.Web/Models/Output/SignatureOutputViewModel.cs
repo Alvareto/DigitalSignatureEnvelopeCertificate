@@ -31,9 +31,12 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string KeyLength { get; set; }
 
-        public SignatureOutputViewModel() { }
+        public SignatureOutputViewModel()
+        {
+        }
 
-        public SignatureOutputViewModel(byte[] signature, HashAlgorithmName hash, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
+        public SignatureOutputViewModel(byte[] signature, HashAlgorithmName hash, AsymmetricAlgorithmName alg,
+            AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Signature";
             this.Signature = signature.ConvertToHex();
@@ -48,16 +51,16 @@ namespace DigitalSignature.Web.Models.Output
                 "0A",
                 ((int) algKey).ToString("X") // hex
             };
-            this.KeyLength = string.Join("\n" ,KeyLengths);
+            this.KeyLength = string.Join("\n", KeyLengths);
             this.FileName = file;
         }
-
 
 
         public override void Write()
         {
             //public static void WriteSignature(string Signature, string FileName, int RSAKeyLength)
-            using (StreamWriter signatureWriter = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SIGNATURE + FileName))
+            using (StreamWriter signatureWriter =
+                new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SIGNATURE + FileName))
             {
                 signatureWriter.WriteLine(Constants.START);
                 signatureWriter.WriteLine();
@@ -91,8 +94,13 @@ namespace DigitalSignature.Web.Models.Output
                 for (int i = 0; i < GetNumberOfLines(Signature.Length); i++)
                 {
                     if ((Signature.Length - (i * Constants.ROW__CHARACTER_COUNT)) < Constants.ROW__CHARACTER_COUNT)
-                        signatureWriter.WriteLine(Constants.TAB + Signature.Substring(i * Constants.ROW__CHARACTER_COUNT, (Signature.Length - i * Constants.ROW__CHARACTER_COUNT)));
-                    else signatureWriter.WriteLine(Constants.TAB + Signature.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                        signatureWriter.WriteLine(Constants.TAB + Signature.Substring(
+                                                      i * Constants.ROW__CHARACTER_COUNT,
+                                                      (Signature.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                    else
+                        signatureWriter.WriteLine(Constants.TAB +
+                                                  Signature.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                                      Constants.ROW__CHARACTER_COUNT));
                 }
                 signatureWriter.WriteLine();
 
@@ -105,14 +113,16 @@ namespace DigitalSignature.Web.Models.Output
         {
             string _signature = "";
 
-            using (StreamReader SignatureStream = new StreamReader(Environment.CurrentDirectory + @"\Signature\" + FileName))
+            using (StreamReader SignatureStream =
+                new StreamReader(Environment.CurrentDirectory + @"\Signature\" + FileName))
             {
                 string currentLine = "";
 
                 while (SignatureStream.ReadLine() != Constants.SIGNATURE)
                 {
                 }
-                while (((currentLine = SignatureStream.ReadLine()) != "---END OS2 CRYPTO DATA---") && (currentLine != ""))
+                while (((currentLine = SignatureStream.ReadLine()) != "---END OS2 CRYPTO DATA---") &&
+                       (currentLine != ""))
                 {
                     _signature += currentLine.Substring(4);
                 }

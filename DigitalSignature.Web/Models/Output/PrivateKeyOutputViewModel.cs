@@ -31,17 +31,19 @@ namespace DigitalSignature.Web.Models.Output
 
         public override void Read()
         {
-            using (StreamReader sKeyFileReader = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.PRIVATE_KEY + FileName))
+            using (StreamReader sKeyFileReader =
+                new StreamReader(Environment.CurrentDirectory + Constants.File.Path.PRIVATE_KEY + FileName))
             {
                 string currentLine = "";
 
                 while ((currentLine = sKeyFileReader.ReadLine()) != "Modulus:") ;
                 while ((currentLine = sKeyFileReader.ReadLine()) != "") Modulus += currentLine.Substring(4);
 
-                while (((currentLine = sKeyFileReader.ReadLine()) != "Private exponent:") && (currentLine != "Public exponent:")) ;
-                while ((currentLine = sKeyFileReader.ReadLine()) != "---END OS2 CRYPTO DATA---" && (currentLine != "")) PrivateExponent += currentLine.Substring(4);
+                while (((currentLine = sKeyFileReader.ReadLine()) != "Private exponent:") &&
+                       (currentLine != "Public exponent:")) ;
+                while ((currentLine = sKeyFileReader.ReadLine()) != "---END OS2 CRYPTO DATA---" && (currentLine != ""))
+                    PrivateExponent += currentLine.Substring(4);
             }
-
         }
     }
 }

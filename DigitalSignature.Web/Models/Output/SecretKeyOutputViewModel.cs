@@ -28,7 +28,8 @@ namespace DigitalSignature.Web.Models.Output
 
         public override void Write()
         {
-            using (StreamWriter keyFile = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
+            using (StreamWriter keyFile =
+                new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
             {
                 keyFile.WriteLine(Constants.START);
                 keyFile.WriteLine();
@@ -55,9 +56,11 @@ namespace DigitalSignature.Web.Models.Output
                 for (int i = 0; i < GetNumberOfLines(SecretKey.Length); i++)
                 {
                     if ((SecretKey.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
-                        keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT, (SecretKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                        keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                              (SecretKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
                     else
-                        keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                        keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                              Constants.ROW__CHARACTER_COUNT));
                 }
                 keyFile.WriteLine();
 
@@ -65,10 +68,15 @@ namespace DigitalSignature.Web.Models.Output
                 keyFile.WriteLine(Constants.INIT_VECTOR);
                 for (int i = 0; i < GetNumberOfLines(InitializationVector.Length); i++)
                 {
-                    if ((InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
-                        keyFile.WriteLine(Constants.TAB + InitializationVector.Substring(i * Constants.ROW__CHARACTER_COUNT, (InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                    if ((InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT) <
+                        Constants.ROW__CHARACTER_COUNT)
+                        keyFile.WriteLine(Constants.TAB + InitializationVector.Substring(
+                                              i * Constants.ROW__CHARACTER_COUNT,
+                                              (InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT)));
                     else
-                        keyFile.WriteLine(Constants.TAB + InitializationVector.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                        keyFile.WriteLine(Constants.TAB +
+                                          InitializationVector.Substring(i * Constants.ROW__CHARACTER_COUNT,
+                                              Constants.ROW__CHARACTER_COUNT));
                 }
                 keyFile.WriteLine();
 
@@ -78,7 +86,8 @@ namespace DigitalSignature.Web.Models.Output
 
         public override void Read()
         {
-            using (StreamReader KeyFile = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
+            using (StreamReader KeyFile =
+                new StreamReader(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
             {
                 string currentLine = string.Empty;
 

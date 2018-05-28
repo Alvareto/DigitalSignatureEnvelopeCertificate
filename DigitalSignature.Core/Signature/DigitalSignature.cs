@@ -5,18 +5,18 @@ namespace DigitalSignature.Core.Signature
 {
     public class DigitalSignature : IDigitalSignature
     {
-        protected readonly IHashAlgorithm _hashAlgorithm;
         protected readonly IAsymmetricCryptoAlgorithm _algorithm;
+        protected readonly IHashAlgorithm _hashAlgorithm;
+
+        public DigitalSignature(IHashAlgorithm hash, IAsymmetricCryptoAlgorithm algorithm)
+        {
+            _hashAlgorithm = hash;
+            _algorithm = algorithm;
+        }
         //protected readonly HashAlgorithmType _hashType;
         //protected readonly HashAlgorithmKey _hashKey;
 
         public byte[] Signature { get; set; }
-
-        public DigitalSignature(IHashAlgorithm hash, IAsymmetricCryptoAlgorithm algorithm)
-        {
-            this._hashAlgorithm = hash;
-            this._algorithm = algorithm;
-        }
 
         public byte[] Sign(byte[] input) // , string privateKey
         {

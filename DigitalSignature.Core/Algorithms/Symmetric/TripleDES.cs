@@ -7,12 +7,6 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
     {
         protected readonly TripleDESCryptoServiceProvider Algorithm;
 
-        public byte[] PrivateKey
-        {
-            get => Algorithm.Key;
-            set => Algorithm.Key = value;
-        }
-
         public TripleDES(int keySize, CipherMode mode)
         {
             Algorithm = new TripleDESCryptoServiceProvider
@@ -31,6 +25,12 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
             //string Final = DecryptTextFromMemory(Data, tDESalg.Key, tDESalg.IV);
         }
 
+        public byte[] PrivateKey
+        {
+            get => Algorithm.Key;
+            set => Algorithm.Key = value;
+        }
+
         public byte[] Encrypt(byte[] Data)
         {
             // https://msdn.microsoft.com/en-us/library/system.security.cryptography.tripledescryptoserviceprovider(v=vs.110).aspx
@@ -38,12 +38,12 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
             byte[] ret;
 
             // Create a memorystream
-            using (MemoryStream mStream = new MemoryStream())
+            using (var mStream = new MemoryStream())
             {
                 using (
                     // Create a CryptoStream using the MemoryStream
                     // and pass key and initialization vector (IV)
-                    CryptoStream cStream = new CryptoStream(
+                    var cStream = new CryptoStream(
                         mStream,
                         new TripleDESCryptoServiceProvider()
                             .CreateEncryptor(Algorithm.Key, Algorithm.IV),
@@ -61,7 +61,7 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
                     // that holds the encrypted data.
                     ret = mStream.ToArray();
                 }
-            }// close the streams.
+            } // close the streams.
 
             // return the encrypted buffer
             return ret;
@@ -71,15 +71,15 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
         {
             // https://msdn.microsoft.com/en-us/library/system.security.cryptography.tripledescryptoserviceprovider(v=vs.110).aspx
 
-            byte[] fromEncrypt = new byte[Data.Length];
+            var fromEncrypt = new byte[Data.Length];
 
             // Create a MemoryStream using the passed array of encrypted data.
-            using (MemoryStream mStream = new MemoryStream(Data))
+            using (var mStream = new MemoryStream(Data))
             {
                 using (
                     // Create a CryptoStream using the MemoryStream
                     // and pass key and initialization vector (IV)
-                    CryptoStream csDecrypt = new CryptoStream(
+                    var csDecrypt = new CryptoStream(
                         mStream,
                         new TripleDESCryptoServiceProvider()
                             .CreateDecryptor(Algorithm.Key, Algorithm.IV),
@@ -96,7 +96,7 @@ namespace DigitalSignature.Core.Algorithms.Symmetric
                     // Convert the buffer into a string and return it
                     //return new ASCIIEncoding().GetString(fromEncrypt);
                 }
-            }// close the streams.
+            } // close the streams.
 
             return fromEncrypt;
         }

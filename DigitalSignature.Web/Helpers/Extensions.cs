@@ -19,7 +19,8 @@ namespace DigitalSignature.Web.Helpers
 
             IHashAlgorithm hash = GetHashAlgorithm(vm.SelectedHashAlgorithmName);
 
-            IAsymmetricCryptoAlgorithm asymmetric = GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
+            IAsymmetricCryptoAlgorithm asymmetric =
+                GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
 
             var signature = new Core.Signature.DigitalSignature(hash: hash, algorithm: asymmetric);
 
@@ -29,21 +30,23 @@ namespace DigitalSignature.Web.Helpers
 
             var file = "";
             var output = new SignatureOutputViewModel(_sign, vm.SelectedHashAlgorithmName,
-                vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey, file: Constants.File.Name.SIGNATURE)
-                { InputText = vm.InputText };
+                    vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
+                    file: Constants.File.Name.SIGNATURE)
+                {InputText = vm.InputText};
 
             return output;
         }
-
 
 
         public static EnvelopeOutputViewModel GenerateEnvelope(this EnvelopeInputViewModel vm)
         {
             var inputBytes = Encoding.ASCII.GetBytes(vm.InputText); // new byte[] { };
 
-            ISymmetricCryptoAlgorithm symmetric = GetSymmetricAlgorithm(vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedSymmetricAlgorithmMode);
+            ISymmetricCryptoAlgorithm symmetric = GetSymmetricAlgorithm(vm.SelectedSymmetricAlgorithmName,
+                vm.SelectedSymmetricAlgorithmKey, vm.SelectedSymmetricAlgorithmMode);
 
-            IAsymmetricCryptoAlgorithm asymmetric = GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
+            IAsymmetricCryptoAlgorithm asymmetric =
+                GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
 
             var envelope = new DigitalEnvelope(symmetric: symmetric, asymmetric: asymmetric);
 
@@ -51,9 +54,11 @@ namespace DigitalSignature.Web.Helpers
 
             var data = envelope.Decrypt();
 
-            var model = new EnvelopeOutputViewModel(_env.data, _env.cryptKey, vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
+            var model = new EnvelopeOutputViewModel(_env.data, _env.cryptKey, vm.SelectedSymmetricAlgorithmName,
+                    vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName,
+                    vm.SelectedAsymmetricAlgorithmKey,
                     file: Constants.File.Name.ENVELOPE)
-                { InputText = vm.InputText };
+                {InputText = vm.InputText};
 
             return model;
         }
@@ -63,9 +68,11 @@ namespace DigitalSignature.Web.Helpers
         {
             var inputBytes = Encoding.ASCII.GetBytes(vm.InputText); // new byte[] { };
 
-            ISymmetricCryptoAlgorithm symmetric = GetSymmetricAlgorithm(vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedSymmetricAlgorithmMode);
+            ISymmetricCryptoAlgorithm symmetric = GetSymmetricAlgorithm(vm.SelectedSymmetricAlgorithmName,
+                vm.SelectedSymmetricAlgorithmKey, vm.SelectedSymmetricAlgorithmMode);
 
-            IAsymmetricCryptoAlgorithm asymmetric = GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
+            IAsymmetricCryptoAlgorithm asymmetric =
+                GetAsymmetricAlgorithm(vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey);
 
             var envelope = new DigitalEnvelope(symmetric: symmetric, asymmetric: asymmetric);
 
@@ -82,37 +89,41 @@ namespace DigitalSignature.Web.Helpers
 
             (bool, byte[]) _degen = certificate.Check();
 
-            var model = new CertificateOutputViewModel(_gen, envelope.Data, envelope.Key, hash.AlgorithmName, vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
-                file: Constants.File.Name.CERTIFICATE)
-            { InputText = vm.InputText };
+            var model = new CertificateOutputViewModel(_gen, envelope.Data, envelope.Key, hash.AlgorithmName,
+                    vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey,
+                    vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
+                    file: Constants.File.Name.CERTIFICATE)
+                {InputText = vm.InputText};
 
             return model;
         }
 
-        private static ISymmetricCryptoAlgorithm GetSymmetricAlgorithm(this SymmetricAlgorithmName name, SymmetricAlgorithmKey keySize, System.Security.Cryptography.CipherMode mode)
+        private static ISymmetricCryptoAlgorithm GetSymmetricAlgorithm(this SymmetricAlgorithmName name,
+            SymmetricAlgorithmKey keySize, System.Security.Cryptography.CipherMode mode)
         {
             switch (name)
             {
                 case SymmetricAlgorithmName.TripleDES:
-                    return new TripleDES(keySize: (int)keySize, mode: mode);
+                    return new TripleDES(keySize: (int) keySize, mode: mode);
                     break;
                 case SymmetricAlgorithmName.AES:
                 default:
-                    return new AES(keySize: (int)keySize, mode: mode);
+                    return new AES(keySize: (int) keySize, mode: mode);
                     break;
             }
         }
 
-        private static IAsymmetricCryptoAlgorithm GetAsymmetricAlgorithm(this AsymmetricAlgorithmName name, AsymmetricAlgorithmKey keySize)
+        private static IAsymmetricCryptoAlgorithm GetAsymmetricAlgorithm(this AsymmetricAlgorithmName name,
+            AsymmetricAlgorithmKey keySize)
         {
             switch (name)
             {
                 case AsymmetricAlgorithmName.ElGamal:
-                    return new ElGamal(keySize: (int)keySize);
+                    return new ElGamal(keySize: (int) keySize);
                     break;
                 case AsymmetricAlgorithmName.RSA:
                 default:
-                    return new RSA(keySize: (int)keySize);
+                    return new RSA(keySize: (int) keySize);
                     break;
             }
         }

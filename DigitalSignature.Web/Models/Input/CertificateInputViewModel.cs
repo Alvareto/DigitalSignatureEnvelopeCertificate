@@ -14,6 +14,5 @@ namespace DigitalSignature.Web.Models.Input
         public System.Security.Cryptography.CipherMode SelectedSymmetricAlgorithmMode { get; set; }
         public SymmetricAlgorithmKey SelectedSymmetricAlgorithmKey { get; set; }
         public HashAlgorithmName SelectedHashAlgorithmName { get; set; }
-
     }
 }

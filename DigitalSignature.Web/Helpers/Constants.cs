@@ -60,6 +60,5 @@
                 public static string PRIVATE_KEY = @"PrivateKey.txt";
             }
         }
-
     }
 }
