@@ -1,0 +1,20 @@
+﻿using System.Security.Cryptography;
+
+namespace DigitalSignature.Core.Algorithms.Hash.SHA1
+{
+    public class SHA1 : IHashAlgorithm
+    {
+        protected readonly SHA1CryptoServiceProvider Algorithm;
+        public HashAlgorithmName AlgorithmName => HashAlgorithmName.SHA1;
+
+        public SHA1()
+        {
+            Algorithm = new SHA1CryptoServiceProvider();
+        }
+
+        public byte[] Calculate(byte[] input)
+        {
+            return Algorithm.ComputeHash(input);
+        }
+    }
+}
