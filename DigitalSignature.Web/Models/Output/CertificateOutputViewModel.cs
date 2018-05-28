@@ -22,7 +22,7 @@ namespace DigitalSignature.Web.Models.Output
         /// <summary>
         /// Key length: - duljina ključa u bitovima (heksadecimalno!)
         /// </summary>
-        public List<string> KeyLength { get; set; }
+        public List<string> KeyLengths { get; set; }
 
         /// <summary>
         /// Envelope data: - poruka kriptirana simetričnim ključem kod omotnice, base 64 kodirano (ne heksa)
@@ -34,6 +34,11 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string EnvelopeCryptKey { get; set; }
 
+        /// <summary>
+        /// Key length: - duljina ključa u bitovima (heksadecimalno!)
+        /// </summary>
+        public string KeyLength { get; set; }
+
         public CertificateOutputViewModel() { }
 
         public CertificateOutputViewModel(byte[] signature, byte[] data, byte[] key, HashAlgorithmName hash, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
@@ -44,18 +49,20 @@ namespace DigitalSignature.Web.Models.Output
             this.EnvelopeCryptKey = key.ConvertToHex();
             this.Signature = signature.ConvertToHex();
 
-            this.Method = new List<string>()
+            this.Methods = new List<string>()
             {
                 hash.ToString(),
                 sym.ToString(),
                 alg.ToString()
             };
-            this.KeyLength = new List<string>()
+            this.Method = string.Join("\n", Methods);
+            this.KeyLengths = new List<string>()
             {
                 "",
                 ((int) symKey).ToString("X"), // hex
                 ((int) algKey).ToString("X") // hex
             };
+            this.KeyLength = string.Join("\n", KeyLengths);
             this.FileName = file;
         }
 

@@ -29,7 +29,8 @@ namespace DigitalSignature.Web.Helpers
 
             var file = "";
             var output = new SignatureOutputViewModel(_sign, vm.SelectedHashAlgorithmName,
-                vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey, file);
+                vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey, file: Constants.File.Name.SIGNATURE)
+                { InputText = vm.InputText };
 
             return output;
         }
@@ -51,7 +52,8 @@ namespace DigitalSignature.Web.Helpers
             var data = envelope.Decrypt();
 
             var model = new EnvelopeOutputViewModel(_env.data, _env.cryptKey, vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
-                file: "");
+                    file: Constants.File.Name.ENVELOPE)
+                { InputText = vm.InputText };
 
             return model;
         }
@@ -81,7 +83,8 @@ namespace DigitalSignature.Web.Helpers
             (bool, byte[]) _degen = certificate.Check();
 
             var model = new CertificateOutputViewModel(_gen, envelope.Data, envelope.Key, hash.AlgorithmName, vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
-                file: "");
+                file: Constants.File.Name.CERTIFICATE)
+            { InputText = vm.InputText };
 
             return model;
         }

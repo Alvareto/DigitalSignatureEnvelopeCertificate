@@ -8,6 +8,7 @@ using DigitalSignature.Web.Helpers;
 
 namespace DigitalSignature.Web.Models.Output
 {
+    [Serializable]
     public class SignatureOutputViewModel : OutputViewModel
     {
         /// <summary>
@@ -23,7 +24,12 @@ namespace DigitalSignature.Web.Models.Output
         /// <summary>
         /// Key length: - duljina ključa u bitovima (heksadecimalno!)
         /// </summary>
-        public List<string> KeyLength { get; set; }
+        public IEnumerable<string> KeyLengths { get; set; }
+
+        /// <summary>
+        /// Key length: - duljina ključa u bitovima (heksadecimalno!)
+        /// </summary>
+        public string KeyLength { get; set; }
 
         public SignatureOutputViewModel() { }
 
@@ -31,16 +37,18 @@ namespace DigitalSignature.Web.Models.Output
         {
             this.Description = "Signature";
             this.Signature = signature.ConvertToHex();
-            this.Method = new List<string>()
+            this.Methods = new List<string>()
             {
                 hash.ToString(),
                 alg.ToString()
             };
-            this.KeyLength = new List<string>()
+            this.Method = string.Join("\n", Methods);
+            this.KeyLengths = new List<string>()
             {
-                "",
+                "0A",
                 ((int) algKey).ToString("X") // hex
             };
+            this.KeyLength = string.Join("\n" ,KeyLengths);
             this.FileName = file;
         }
 
@@ -64,14 +72,14 @@ namespace DigitalSignature.Web.Models.Output
                 signatureWriter.WriteLine();
 
                 signatureWriter.WriteLine(Constants.METHOD);
-                foreach (var m in Method)
+                foreach (var m in Methods)
                 {
                     signatureWriter.WriteLine(Constants.TAB + m); // "SHA-1"
                 }
                 signatureWriter.WriteLine();
 
                 signatureWriter.WriteLine(Constants.KEY_LENGTH);
-                foreach (var k in KeyLength)
+                foreach (var k in KeyLengths)
                 {
                     signatureWriter.WriteLine(Constants.TAB + k);
                 }

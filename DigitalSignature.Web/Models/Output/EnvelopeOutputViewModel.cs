@@ -18,7 +18,7 @@ namespace DigitalSignature.Web.Models.Output
         /// <summary>
         /// Key length: - duljina ključa u bitovima (heksadecimalno!)
         /// </summary>
-        public List<string> KeyLength { get; set; }
+        public List<string> KeyLengths { get; set; }
 
         /// <summary>
         /// Envelope data: - poruka kriptirana simetričnim ključem kod omotnice, base 64 kodirano (ne heksa)
@@ -30,23 +30,31 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string EnvelopeCryptKey { get; set; }
 
+        /// <summary>
+        /// Key length: - duljina ključa u bitovima (heksadecimalno!)
+        /// </summary>
+        public string KeyLength { get; set; }
+
         public EnvelopeOutputViewModel() { }
+
 
         public EnvelopeOutputViewModel(byte[] data, byte[] key, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Envelope";
             this.EnvelopeData = Convert.ToBase64String(data);
             this.EnvelopeCryptKey = key.ConvertToHex();
-            this.Method = new List<string>()
+            this.Methods = new List<string>()
             {
                 sym.ToString(),
                 alg.ToString()
             };
-            this.KeyLength = new List<string>()
+            this.Method = string.Join("\n", Methods);
+            this.KeyLengths = new List<string>()
             {
                 ((int) symKey).ToString("X"), // hex
                 ((int) algKey).ToString("X") // hex
             };
+            this.KeyLength = string.Join("\n", KeyLengths);
             this.FileName = file;
         }
 
@@ -68,14 +76,14 @@ namespace DigitalSignature.Web.Models.Output
                 envelopeWriter.WriteLine();
 
                 envelopeWriter.WriteLine(Constants.METHOD);
-                foreach (var m in Method)
+                foreach (var m in Methods)
                 {
                     envelopeWriter.WriteLine(Constants.TAB + m); // "SHA-1"
                 }
                 envelopeWriter.WriteLine();
 
                 envelopeWriter.WriteLine(Constants.KEY_LENGTH);
-                foreach (var k in KeyLength)
+                foreach (var k in KeyLengths)
                 {
                     envelopeWriter.WriteLine(Constants.TAB + k);
                 }

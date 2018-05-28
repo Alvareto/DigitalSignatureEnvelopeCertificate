@@ -33,7 +33,7 @@ namespace DigitalSignature.Web.Models.Output
                 cypherTextFile.WriteLine();
 
                 cypherTextFile.WriteLine(Constants.METHOD);
-                foreach (var m in Method)
+                foreach (var m in Methods)
                 {
                     cypherTextFile.WriteLine(Constants.TAB + m); // "SHA-1"
                 }

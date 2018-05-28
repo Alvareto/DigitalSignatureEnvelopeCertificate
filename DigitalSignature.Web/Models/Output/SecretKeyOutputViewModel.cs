@@ -38,7 +38,7 @@ namespace DigitalSignature.Web.Models.Output
                 keyFile.WriteLine();
 
                 keyFile.WriteLine(Constants.METHOD);
-                foreach (var m in Method)
+                foreach (var m in Methods)
                 {
                     keyFile.WriteLine(Constants.TAB + m); // "SHA-1"
                 }
