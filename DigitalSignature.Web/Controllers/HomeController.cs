@@ -18,7 +18,7 @@ using SHA256 = DigitalSignature.Core.Algorithms.Hash.SHA2.SHA256;
 
 namespace DigitalSignature.Web.Controllers
 {
-    public class HomeController : Controller
+    public partial class HomeController : Controller
     {
         public ActionResult Index()
         {
@@ -28,12 +28,77 @@ namespace DigitalSignature.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Generate(
-            InputViewModel vm)
+        public ActionResult Generate(InputViewModel vm)
         {
 
             return View();
         }
+
+        public ActionResult GenerateSignature(InputViewModel vm)
+        {
+            var model = GenerateSignature(new SignatureInputViewModel
+            {
+                InputText = vm.InputText,
+                SelectedHashAlgorithmName = vm.SelectedHashAlgorithmName,
+                SelectedAsymmetricAlgorithmName = vm.SelectedAsymmetricAlgorithmName,
+                SelectedAsymmetricAlgorithmKey = vm.SelectedAsymmetricAlgorithmKey
+            });
+
+            return View(model);
+
+            //model.FileName = "";
+
+            //string fullName = Path.Combine(Environment.CurrentDirectory, filePath, fileName);
+
+            //byte[] fileBytes = GetFile(fullName);
+            //return File(
+            //    fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+
+            //model.Write();
+        }
+
+        //byte[] GetFile(string s)
+        //{
+        //    System.IO.File.ReadAllBytes(s);
+        //    System.IO.FileStream fs = System.IO.File.OpenRead(s);
+        //    byte[] data = new byte[fs.Length];
+        //    int br = fs.Read(data, 0, data.Length);
+        //    if (br != fs.Length)
+        //        throw new System.IO.IOException(s);
+        //    return data;
+        //}
+
+        public ActionResult GenerateEnvelope(InputViewModel vm)
+        {
+            var model = GenerateEnvelope(new EnvelopeInputViewModel
+            {
+                InputText = vm.InputText,
+                SelectedAsymmetricAlgorithmName = vm.SelectedAsymmetricAlgorithmName,
+                SelectedAsymmetricAlgorithmKey = vm.SelectedAsymmetricAlgorithmKey,
+                SelectedSymmetricAlgorithmName = vm.SelectedSymmetricAlgorithmName,
+                SelectedSymmetricAlgorithmKey = vm.SelectedSymmetricAlgorithmKey,
+                SelectedSymmetricAlgorithmMode = vm.SelectedSymmetricAlgorithmMode
+            });
+
+            return View(model);
+        }
+
+        public ActionResult GenerateCertificate(InputViewModel vm)
+        {
+            var model = GenerateCertificate(new CertificateInputViewModel
+            {
+                InputText = vm.InputText,
+                SelectedAsymmetricAlgorithmName = vm.SelectedAsymmetricAlgorithmName,
+                SelectedAsymmetricAlgorithmKey = vm.SelectedAsymmetricAlgorithmKey,
+                SelectedSymmetricAlgorithmName = vm.SelectedSymmetricAlgorithmName,
+                SelectedSymmetricAlgorithmKey = vm.SelectedSymmetricAlgorithmKey,
+                SelectedSymmetricAlgorithmMode = vm.SelectedSymmetricAlgorithmMode
+            });
+
+            return View(model);
+        }
+
+
 
         public SignatureOutputViewModel GenerateSignature(SignatureInputViewModel vm)
         {
@@ -72,6 +137,76 @@ namespace DigitalSignature.Web.Controllers
 
             public abstract void Write();
             public abstract void Read();
+
+            protected double GetNumberOfLines(int length)
+            {
+                double numLines = (double)length / Constants.ROW__CHARACTER_COUNT;
+                if (Math.Truncate(numLines) < numLines)
+                    numLines++;
+
+                return Math.Truncate(numLines);
+            }
+        }
+
+        public class CertificateOutputViewModel : OutputViewModel
+        {
+            /// <summary>
+            /// Signature: - sažetak poruke (ili omotnice) potpisan tajnim ključem pošiljatelja poruke (heksadecimalno!)
+            /// </summary>
+            public string Signature { get; set; }
+
+            /// <summary>
+            /// File name: - ime datoteke koja se kriptira, čiji se sažetak radi, (opcionalno) ...
+            /// </summary>
+            public string FileName { get; set; }
+
+            /// <summary>
+            /// Key length: - duljina ključa u bitovima (heksadecimalno!)
+            /// </summary>
+            public List<string> KeyLength { get; set; }
+
+            /// <summary>
+            /// Envelope data: - poruka kriptirana simetričnim ključem kod omotnice, base 64 kodirano (ne heksa)
+            /// </summary>
+            public string EnvelopeData { get; set; }
+
+            /// <summary>
+            /// Envelope crypt key: - simetrični ključ kriptiran javnim ključem primatelja poruke (heksadecimalno!)
+            /// </summary>
+            public string EnvelopeCryptKey { get; set; }
+
+            public CertificateOutputViewModel(byte[] signature, byte[] data, byte[] key, HashAlgorithmName hash, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
+            {
+                this.Description = "Certificate";
+
+                this.EnvelopeData = Convert.ToBase64String(data);
+                this.EnvelopeCryptKey = key.ConvertToHex();
+                this.Signature = signature.ConvertToHex();
+
+                this.Method = new List<string>()
+                {
+                    hash.ToString(),
+                    sym.ToString(),
+                    alg.ToString()
+                };
+                this.KeyLength = new List<string>()
+                {
+                    "",
+                    ((int) symKey).ToString("X"), // hex
+                    ((int) algKey).ToString("X") // hex
+                };
+                this.FileName = file;
+            }
+
+            public override void Write()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Read()
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class SignatureOutputViewModel : OutputViewModel
@@ -95,7 +230,7 @@ namespace DigitalSignature.Web.Controllers
             {
                 this.Description = "Signature";
                 this.Signature = signature.ConvertToHex();
-                this.Method = new List<String>()
+                this.Method = new List<string>()
                 {
                     hash.ToString(),
                     alg.ToString()
@@ -113,7 +248,7 @@ namespace DigitalSignature.Web.Controllers
             public override void Write()
             {
                 //public static void WriteSignature(string Signature, string FileName, int RSAKeyLength)
-                using (StreamWriter signatureWriter = new StreamWriter(Environment.CurrentDirectory + @"\Signature\" + FileName))
+                using (StreamWriter signatureWriter = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SIGNATURE + FileName))
                 {
                     signatureWriter.WriteLine(Constants.START);
                     signatureWriter.WriteLine();
@@ -143,10 +278,8 @@ namespace DigitalSignature.Web.Controllers
 
                     signatureWriter.WriteLine(Constants.SIGNATURE);
 
-                    double numLines = (double)Signature.Length / Constants.ROW__CHARACTER_COUNT;
 
-                    if (Math.Truncate(numLines) < numLines) numLines++;
-                    for (int i = 0; i < Math.Truncate(numLines); i++)
+                    for (int i = 0; i < GetNumberOfLines(Signature.Length); i++)
                     {
                         if ((Signature.Length - (i * Constants.ROW__CHARACTER_COUNT)) < Constants.ROW__CHARACTER_COUNT)
                             signatureWriter.WriteLine(Constants.TAB + Signature.Substring(i * Constants.ROW__CHARACTER_COUNT, (Signature.Length - i * Constants.ROW__CHARACTER_COUNT)));
@@ -167,7 +300,7 @@ namespace DigitalSignature.Web.Controllers
                 {
                     string currentLine = "";
 
-                    while (SignatureStream.ReadLine() != "Signature:")
+                    while (SignatureStream.ReadLine() != Constants.SIGNATURE)
                     {
                     }
                     while (((currentLine = SignatureStream.ReadLine()) != "---END OS2 CRYPTO DATA---") && (currentLine != ""))
@@ -180,38 +313,6 @@ namespace DigitalSignature.Web.Controllers
 
                 Signature = _signature;
             }
-        }
-
-        public class Constants
-        {
-            public static string START = "---BEGIN OS 2 CRYPTO DATA---";
-            public static string END = "---END OS2 CRYPTO DATA---";
-
-            public static string DESCRIPTION = "Description:";
-            public static string METHOD = "Method:";
-            public static string SIGNATURE = "Signature:";
-            public static string KEY_LENGTH = "Key length:";
-            public static string MODULUS = "Modulus:";
-            public static string PUBLIC_EXPONENT = "Public exponent:";
-            public static string PRIVATE_EXPONENT = "Private exponent:";
-            public static string SECRET_KEY = "Secret key:";
-            public static string FILE_NAME = "File name:";
-            public static string DATA = "Data:";
-            public static string INIT_VECTOR = "Initialization vector:";
-            public static string ENVELOPE_DATA = "Envelope data:";
-            public static string ENVELOPE_KEY = "Envelope crypt key:";
-
-            public static string TAB = "    ";
-
-            public static string DESCRIPTION_SECRET_KEY = "Secret key";
-            public static string DESCRIPTION_PUBLIC_KEY = "Public key";
-            public static string DESCRIPTION_PRIVATE_KEY = "Private key";
-            public static string DESCRIPTION_SIGNATURE = "Signature";
-            public static string DESCRIPTION_ENVELOPE = "Envelope";
-            public static string DESCRIPTION_CRYPTED_FILE = "Crypted file";
-
-            public static int ROW__CHARACTER_COUNT = 60;
-
         }
 
         public class EnvelopeOutputViewModel : OutputViewModel
@@ -240,7 +341,7 @@ namespace DigitalSignature.Web.Controllers
                 this.Description = "Envelope";
                 this.EnvelopeData = Convert.ToBase64String(data);
                 this.EnvelopeCryptKey = key.ConvertToHex();
-                this.Method = new List<String>()
+                this.Method = new List<string>()
                 {
                     sym.ToString(),
                     alg.ToString()
@@ -256,7 +357,7 @@ namespace DigitalSignature.Web.Controllers
             public override void Write()
             {
                 //public static void WriteEnvelope(string FileName, Envelope EnvelopeData, int RSAKeyLength)
-                using (StreamWriter envelopeWriter = new StreamWriter(Environment.CurrentDirectory + @"\Envelope\" + FileName))
+                using (StreamWriter envelopeWriter = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
                 {
                     envelopeWriter.WriteLine(Constants.START);
                     envelopeWriter.WriteLine();
@@ -266,8 +367,8 @@ namespace DigitalSignature.Web.Controllers
                     envelopeWriter.WriteLine();
 
                     envelopeWriter.WriteLine(Constants.FILE_NAME);
-                    string[] BreadCrumbs = FileName.Split('\\');
-                    envelopeWriter.WriteLine(Constants.TAB + BreadCrumbs[BreadCrumbs.Length - 1]);
+                    string last = FileName.Split('\\').LastOrDefault();
+                    envelopeWriter.WriteLine(Constants.TAB + last);
                     envelopeWriter.WriteLine();
 
                     envelopeWriter.WriteLine(Constants.METHOD);
@@ -298,9 +399,7 @@ namespace DigitalSignature.Web.Controllers
 
 
                     envelopeWriter.WriteLine(Constants.ENVELOPE_KEY);
-                    numLines = (double)EnvelopeCryptKey.Length / Constants.ROW__CHARACTER_COUNT;
-                    if (Math.Truncate(numLines) < numLines) numLines++;
-                    for (int i = 0; i < Math.Truncate(numLines); i++)
+                    for (int i = 0; i < GetNumberOfLines(EnvelopeCryptKey.Length); i++)
                     {
                         if ((EnvelopeCryptKey.Length - (i * Constants.ROW__CHARACTER_COUNT)) < Constants.ROW__CHARACTER_COUNT)
                             envelopeWriter.WriteLine("    " + EnvelopeCryptKey.Substring(i * Constants.ROW__CHARACTER_COUNT, (EnvelopeCryptKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
@@ -314,18 +413,17 @@ namespace DigitalSignature.Web.Controllers
 
             public override void Read()
             {
-                using (StreamReader EnvelopeStream =
-                    new StreamReader(Environment.CurrentDirectory + @"\Envelope\" + FileName))
+                using (StreamReader envelopeStream = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.ENVELOPE + FileName))
                 {
-                    string CurrentLine = "";
+                    string currentLine = "";
                     EnvelopeData = "";
                     EnvelopeCryptKey = "";
 
-                    while ((EnvelopeStream.ReadLine()) != Constants.ENVELOPE_DATA) ;
-                    while ((CurrentLine = EnvelopeStream.ReadLine()) != "") EnvelopeData += CurrentLine.Substring(Constants.TAB.Length);
+                    while ((envelopeStream.ReadLine()) != Constants.ENVELOPE_DATA) ;
+                    while ((currentLine = envelopeStream.ReadLine()) != "") EnvelopeData += currentLine.Substring(Constants.TAB.Length);
 
-                    while ((EnvelopeStream.ReadLine()) != Constants.ENVELOPE_KEY) ;
-                    while (((CurrentLine = EnvelopeStream.ReadLine()) != Constants.END) && (CurrentLine != "")) EnvelopeCryptKey += CurrentLine.Substring(4);
+                    while ((envelopeStream.ReadLine()) != Constants.ENVELOPE_KEY) ;
+                    while (((currentLine = envelopeStream.ReadLine()) != Constants.END) && (currentLine != "")) EnvelopeCryptKey += currentLine.Substring(4);
 
                 }
             }
@@ -350,7 +448,7 @@ namespace DigitalSignature.Web.Controllers
                 //dodaj .txt na kraju imena datoteke ako ga nema
                 if (FileName.Substring(FileName.Length - 4, 4) != ".txt") FileName += ".txt";
                 //begin writing process
-                using (StreamWriter cypherTextFile = new StreamWriter(Environment.CurrentDirectory + @"\Cyphertext\" + FileName))
+                using (StreamWriter cypherTextFile = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.CYPHERTEXT + FileName))
                 {
                     cypherTextFile.WriteLine(Constants.START);
                     cypherTextFile.WriteLine();
@@ -372,10 +470,7 @@ namespace DigitalSignature.Web.Controllers
                     cypherTextFile.WriteLine();
 
                     cypherTextFile.WriteLine(Constants.DATA);
-                    double NumLines = (double)Data.Length / Constants.ROW__CHARACTER_COUNT;
-                    if (Math.Truncate(NumLines) < NumLines)
-                        NumLines++;
-                    for (int i = 0; i < Math.Truncate(NumLines); i++)
+                    for (int i = 0; i < GetNumberOfLines(Data.Length); i++)
                     {
                         if ((Data.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
                             cypherTextFile.WriteLine(Constants.TAB + Data.Substring(i * Constants.ROW__CHARACTER_COUNT, (Data.Length - i * Constants.ROW__CHARACTER_COUNT)));
@@ -390,7 +485,7 @@ namespace DigitalSignature.Web.Controllers
 
             public override void Read()
             {
-                StreamReader CypherTextFile = new StreamReader(Environment.CurrentDirectory + @"\Cyphertext\" + FileName);
+                StreamReader CypherTextFile = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.CYPHERTEXT + FileName);
 
                 string CurrentLine = "";
 
@@ -431,120 +526,78 @@ namespace DigitalSignature.Web.Controllers
 
             public override void Write()
             {
-                byte[] key = Funkcije.KeyGenerator(KeyLength);
-
-                string KeyString = Funkcije.FromByteToHexString(key);
-                //kreiranje datoteke            
-
-                //dodaj .txt na kraju imena datoteke ako ga nema
-                if (FileName.Substring(FileName.Length - 4, 4) != ".txt") FileName += ".txt";
-
-                StreamWriter KeyFile = new StreamWriter(Environment.CurrentDirectory + @"\Keys\" + FileName);
-
-                KeyFile.WriteLine("---BEGIN OS2 CRYPTO DATA---");
-                KeyFile.WriteLine();
-                KeyFile.WriteLine("Description:");
-                KeyFile.WriteLine("    Secret Key");
-                KeyFile.WriteLine();
-                KeyFile.WriteLine("Method:");
-                KeyFile.WriteLine("    AES");
-                KeyFile.WriteLine();
-                KeyFile.WriteLine("Key Length:");
-                KeyFile.WriteLine("    " + Funkcije.IntToHex(KeyLength));
-                KeyFile.WriteLine();
-                KeyFile.WriteLine("Secret Key:");
-
-                double NumLines = (double)KeyString.Length / 60;
-
-                if (Math.Truncate(NumLines) < NumLines) NumLines++;
-
-                for (int i = 0; i < Math.Truncate(NumLines); i++)
+                using (StreamWriter keyFile = new StreamWriter(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
                 {
-                    if ((KeyString.Length - i * 60) < 60)
-                        KeyFile.WriteLine("    " + KeyString.Substring(i * 60, (KeyString.Length - i * 60)));
-                    else
-                        KeyFile.WriteLine("    " + KeyString.Substring(i * 60, 60));
+                    keyFile.WriteLine(Constants.START);
+                    keyFile.WriteLine();
+
+                    keyFile.WriteLine(Constants.DESCRIPTION);
+                    keyFile.WriteLine(Constants.TAB + Constants.DESCRIPTION_SECRET_KEY);
+                    keyFile.WriteLine();
+
+                    keyFile.WriteLine(Constants.METHOD);
+                    foreach (var m in Method)
+                    {
+                        keyFile.WriteLine(Constants.TAB + m); // "SHA-1"
+                    }
+                    keyFile.WriteLine();
+
+                    keyFile.WriteLine(Constants.KEY_LENGTH);
+                    foreach (var m in KeyLength)
+                    {
+                        keyFile.WriteLine(Constants.TAB + m); // "SHA-1"
+                    }
+                    keyFile.WriteLine();
+
+                    keyFile.WriteLine(Constants.SECRET_KEY);
+                    for (int i = 0; i < GetNumberOfLines(SecretKey.Length); i++)
+                    {
+                        if ((SecretKey.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
+                            keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT, (SecretKey.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                        else
+                            keyFile.WriteLine(Constants.TAB + SecretKey.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                    }
+                    keyFile.WriteLine();
+
+
+                    keyFile.WriteLine(Constants.INIT_VECTOR);
+                    for (int i = 0; i < GetNumberOfLines(InitializationVector.Length); i++)
+                    {
+                        if ((InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
+                            keyFile.WriteLine(Constants.TAB + InitializationVector.Substring(i * Constants.ROW__CHARACTER_COUNT, (InitializationVector.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                        else
+                            keyFile.WriteLine(Constants.TAB + InitializationVector.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                    }
+                    keyFile.WriteLine();
+
+                    keyFile.WriteLine(Constants.END);
                 }
-                KeyFile.WriteLine();
-                KeyFile.WriteLine("---END OS2 CRYPTO DATA---");
-                KeyFile.Close();
-
-
-
-                byte[] IVector = Funkcije.KeyGenerator(128);
-
-                string VectorString = Funkcije.FromByteToHexString(IVector);
-                //kreiranje datoteke            
-
-                //dodaj .txt na kraju imena datoteke ako ga nema
-                if (FileName.Substring(FileName.Length - 4, 4) != ".txt") FileName += ".txt";
-
-                StreamWriter IVectorFile = new StreamWriter(Program.direktorij + @"\Keys\" + FileName);
-
-                IVectorFile.WriteLine("---BEGIN OS2 CRYPTO DATA---");
-                IVectorFile.WriteLine();
-                IVectorFile.WriteLine("Description:");
-                IVectorFile.WriteLine("    Initialization vector");
-                IVectorFile.WriteLine();
-                IVectorFile.WriteLine("Method:");
-                IVectorFile.WriteLine("    AES");
-                IVectorFile.WriteLine();
-                IVectorFile.WriteLine("Key Length:");
-                IVectorFile.WriteLine("    " + Funkcije.IntToHex(128));
-                IVectorFile.WriteLine();
-                IVectorFile.WriteLine("Initialization vector:");
-
-                double NumLines = (double)VectorString.Length / 60;
-
-                if (Math.Truncate(NumLines) < NumLines) NumLines++;
-
-                for (int i = 0; i < Math.Truncate(NumLines); i++)
-                {
-                    if ((VectorString.Length - i * 60) < 60)
-                        IVectorFile.WriteLine("    " + VectorString.Substring(i * 60, (VectorString.Length - i * 60)));
-                    else
-                        IVectorFile.WriteLine("    " + VectorString.Substring(i * 60, 60));
-                }
-                IVectorFile.WriteLine();
-                IVectorFile.WriteLine("---END OS2 CRYPTO DATA---");
-                IVectorFile.Close();
             }
 
             public override void Read()
             {
-                using (StreamReader KeyFile = new StreamReader(Environment.CurrentDirectory + @"\Keys\" + FileName))
+                using (StreamReader KeyFile = new StreamReader(Environment.CurrentDirectory + Constants.File.Path.SECRET_KEY + FileName))
                 {
-                    String CurrentLine = "";
+                    string currentLine = string.Empty;
 
-                    String Key = "";
+                    string Key = string.Empty;
+                    string IVector = string.Empty;
 
                     //read to start of key data
-                    while ((CurrentLine = KeyFile.ReadLine()) != Constants.SECRET_KEY) ;
+                    while ((currentLine = KeyFile.ReadLine()) != Constants.SECRET_KEY) ;
                     //read key data
-                    while (((CurrentLine = KeyFile.ReadLine()) != Constants.END) && (CurrentLine != ""))
-                        Key += CurrentLine.Substring(4);
-
-
+                    while (((currentLine = KeyFile.ReadLine()) != string.Empty))
+                        Key += currentLine.Substring(4);
                     SecretKey = Key;
+
+                    //read to start of IV data
+                    while ((currentLine = KeyFile.ReadLine()) != Constants.INIT_VECTOR) ;
+                    //read IV data
+                    while (((currentLine = KeyFile.ReadLine()) != Constants.END) && (currentLine != string.Empty))
+                        IVector += currentLine.Substring(4);
+
+                    InitializationVector = IVector;
                 }
-
-
-
-
-                StreamReader IVectorFile = new StreamReader(Program.direktorij + @"\Keys\" + FileName);
-
-                String CurrentLine = "";
-
-                String Vector = "";
-
-                //read to start of key data
-                while ((CurrentLine = IVectorFile.ReadLine()) != "Initialization vector:") ;
-                //read key data
-                while (((CurrentLine = IVectorFile.ReadLine()) != "---END OS2 CRYPTO DATA---") && (CurrentLine != "")) Vector += CurrentLine.Substring(4);
-
-                byte[] DecodingBuffer = Funkcije.FromHexToByte(Vector);
-
-                return DecodingBuffer;
             }
         }
 
@@ -573,7 +626,7 @@ namespace DigitalSignature.Web.Controllers
 
             public override void Read()
             {
-                StreamReader RSAFile = new StreamReader(Program.direktorij + @"\Keys\" + KeyFile);
+                StreamReader RSAFile = new StreamReader(Environment.CurrentDirectory + @"\Keys\" + KeyFile);
 
                 string CurrentLine = "";
                 RSAKey RSA = new RSAKey();
@@ -636,7 +689,9 @@ namespace DigitalSignature.Web.Controllers
             return model;
         }
 
-        public void GenerateCertificate(CertificateInputViewModel vm)
+
+
+        public CertificateOutputViewModel GenerateCertificate(CertificateInputViewModel vm)
         {
             var inputBytes = Encoding.ASCII.GetBytes(vm.InputText); // new byte[] { };
 
@@ -658,6 +713,11 @@ namespace DigitalSignature.Web.Controllers
             byte[] _gen = certificate.Create(input: inputBytes);
 
             (bool, byte[]) _degen = certificate.Check();
+
+            var model = new CertificateOutputViewModel(_gen, envelope.Data, envelope.Key, hash.AlgorithmName, vm.SelectedSymmetricAlgorithmName, vm.SelectedSymmetricAlgorithmKey, vm.SelectedAsymmetricAlgorithmName, vm.SelectedAsymmetricAlgorithmKey,
+            file: "");
+
+            return model;
         }
 
         private ISymmetricCryptoAlgorithm GetSymmetricAlgorithm(SymmetricAlgorithmName name, SymmetricAlgorithmKey keySize, System.Security.Cryptography.CipherMode mode)
