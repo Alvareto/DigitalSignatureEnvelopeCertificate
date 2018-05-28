@@ -1,4 +1,4 @@
-﻿namespace DigitalSignature.Web.Controllers
+﻿namespace DigitalSignature.Web.Helpers
 {
     public static class Constants
     {
