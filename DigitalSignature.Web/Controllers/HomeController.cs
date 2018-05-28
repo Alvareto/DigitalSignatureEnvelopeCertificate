@@ -345,60 +345,65 @@ namespace DigitalSignature.Web.Controllers
             public override void Write()
             {
                 //convert byte[] letters to base64            
-                string Cyphertext = Convert.ToBase64String(input);
+                //string Cyphertext = Convert.ToBase64String(input);
 
                 //dodaj .txt na kraju imena datoteke ako ga nema
                 if (FileName.Substring(FileName.Length - 4, 4) != ".txt") FileName += ".txt";
                 //begin writing process
-                StreamWriter CypherTextFile = new StreamWriter(Program.direktorij + @"\Cyphertext\" + FileName);
-
-                CypherTextFile.WriteLine("---BEGIN OS2 CRYPTO DATA---");
-                CypherTextFile.WriteLine();
-                CypherTextFile.WriteLine("Description:");
-                CypherTextFile.WriteLine("    Crypted file");
-                CypherTextFile.WriteLine();
-                CypherTextFile.WriteLine("Method:");
-                CypherTextFile.WriteLine("    AES");
-                CypherTextFile.WriteLine();
-                CypherTextFile.WriteLine("File name:");
-                CypherTextFile.WriteLine("    " + FileName);
-                CypherTextFile.WriteLine();
-                CypherTextFile.WriteLine("Data:");
-
-                double NumLines = (double)Cyphertext.Length / 60;
-
-                if (Math.Truncate(NumLines) < NumLines) NumLines++;
-
-                for (int i = 0; i < Math.Truncate(NumLines); i++)
+                using (StreamWriter cypherTextFile = new StreamWriter(Environment.CurrentDirectory + @"\Cyphertext\" + FileName))
                 {
-                    if ((Cyphertext.Length - i * 60) < 60)
-                        CypherTextFile.WriteLine("    " + Cyphertext.Substring(i * 60, (Cyphertext.Length - i * 60)));
-                    else
-                        CypherTextFile.WriteLine("    " + Cyphertext.Substring(i * 60, 60));
-                }
-                CypherTextFile.WriteLine();
-                CypherTextFile.WriteLine("---END OS2 CRYPTO DATA---");
+                    cypherTextFile.WriteLine(Constants.START);
+                    cypherTextFile.WriteLine();
 
-                CypherTextFile.Close();
+                    cypherTextFile.WriteLine(Constants.DESCRIPTION);
+                    cypherTextFile.WriteLine(Constants.TAB + Constants.DESCRIPTION_ENVELOPE);
+                    cypherTextFile.WriteLine();
+
+                    cypherTextFile.WriteLine(Constants.METHOD);
+                    foreach (var m in Method)
+                    {
+                        cypherTextFile.WriteLine(Constants.TAB + m); // "SHA-1"
+                    }
+                    cypherTextFile.WriteLine();
+
+                    cypherTextFile.WriteLine(Constants.FILE_NAME);
+                    string[] BreadCrumbs = FileName.Split('\\');
+                    cypherTextFile.WriteLine(Constants.TAB + BreadCrumbs[BreadCrumbs.Length - 1]);
+                    cypherTextFile.WriteLine();
+
+                    cypherTextFile.WriteLine(Constants.DATA);
+                    double NumLines = (double)Data.Length / Constants.ROW__CHARACTER_COUNT;
+                    if (Math.Truncate(NumLines) < NumLines)
+                        NumLines++;
+                    for (int i = 0; i < Math.Truncate(NumLines); i++)
+                    {
+                        if ((Data.Length - i * Constants.ROW__CHARACTER_COUNT) < Constants.ROW__CHARACTER_COUNT)
+                            cypherTextFile.WriteLine(Constants.TAB + Data.Substring(i * Constants.ROW__CHARACTER_COUNT, (Data.Length - i * Constants.ROW__CHARACTER_COUNT)));
+                        else
+                            cypherTextFile.WriteLine(Constants.TAB + Data.Substring(i * Constants.ROW__CHARACTER_COUNT, Constants.ROW__CHARACTER_COUNT));
+                    }
+                    cypherTextFile.WriteLine();
+                    cypherTextFile.WriteLine(Constants.END);
+
+                }
             }
 
             public override void Read()
             {
-                StreamReader CypherTextFile = new StreamReader(Program.direktorij + @"\Cyphertext\" + FileName);
+                StreamReader CypherTextFile = new StreamReader(Environment.CurrentDirectory + @"\Cyphertext\" + FileName);
 
                 string CurrentLine = "";
 
                 string CypherText = "";
 
                 //read to start of data
-                while ((CurrentLine = CypherTextFile.ReadLine()) != "Data:") ;
+                while ((CurrentLine = CypherTextFile.ReadLine()) != Constants.DATA) ;
                 //read data
-                while (((CurrentLine = CypherTextFile.ReadLine()) != "---END OS2 CRYPTO DATA---") && (CurrentLine != "")) CypherText += CurrentLine.Substring(4);
+                while (((CurrentLine = CypherTextFile.ReadLine()) != Constants.END) && (CurrentLine != "")) CypherText += CurrentLine.Substring(4);
 
                 //convert from base64 to text
-                byte[] DecodingBuffer = Convert.FromBase64String(CypherText);
-
-                return DecodingBuffer;
+                //byte[] DecodingBuffer = Convert.FromBase64String(CypherText);
+                Data = CypherText;
             }
         }
 
@@ -415,13 +420,18 @@ namespace DigitalSignature.Web.Controllers
             public string InitializationVector { get; set; }
 
             /// <summary>
+            /// File name: - ime datoteke koja se kriptira, čiji se sažetak radi, (opcionalno) ...
+            /// </summary>
+            public string FileName { get; set; }
+
+            /// <summary>
             /// Key length: - duljina ključa u bitovima (heksadecimalno!)
             /// </summary>
             public string KeyLength { get; set; }
 
             public override void Write()
             {
-                byte[] key = Funkcije.KeyGenerator(Size);
+                byte[] key = Funkcije.KeyGenerator(KeyLength);
 
                 string KeyString = Funkcije.FromByteToHexString(key);
                 //kreiranje datoteke            
@@ -429,7 +439,7 @@ namespace DigitalSignature.Web.Controllers
                 //dodaj .txt na kraju imena datoteke ako ga nema
                 if (FileName.Substring(FileName.Length - 4, 4) != ".txt") FileName += ".txt";
 
-                StreamWriter KeyFile = new StreamWriter(Program.direktorij + @"\Keys\" + FileName);
+                StreamWriter KeyFile = new StreamWriter(Environment.CurrentDirectory + @"\Keys\" + FileName);
 
                 KeyFile.WriteLine("---BEGIN OS2 CRYPTO DATA---");
                 KeyFile.WriteLine();
@@ -440,7 +450,7 @@ namespace DigitalSignature.Web.Controllers
                 KeyFile.WriteLine("    AES");
                 KeyFile.WriteLine();
                 KeyFile.WriteLine("Key Length:");
-                KeyFile.WriteLine("    " + Funkcije.IntToHex(Size));
+                KeyFile.WriteLine("    " + Funkcije.IntToHex(KeyLength));
                 KeyFile.WriteLine();
                 KeyFile.WriteLine("Secret Key:");
 
