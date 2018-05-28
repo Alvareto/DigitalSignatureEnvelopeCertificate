@@ -33,9 +33,6 @@
     <Reference Include="BigInteger, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BigInteger.1.0.7\lib\net20\BigInteger.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.2.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.2\lib\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
     <Reference Include="ElGamalExt, Version=0.9.3.32706, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ElGamalExt.0.9.3.32706\lib\net40\ElGamalExt.dll</HintPath>
     </Reference>
