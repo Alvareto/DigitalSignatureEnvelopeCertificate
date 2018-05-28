@@ -34,6 +34,27 @@ namespace DigitalSignature.Web.Controllers
         public ActionResult Download()
         {
             throw new NotImplementedException();
+
+            //model.FileName = "";
+
+            //string fullName = Path.Combine(Environment.CurrentDirectory, filePath, fileName);
+
+            //byte[] fileBytes = GetFile(fullName);
+            //return File(
+            //    fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+
+            //model.Write();
+
+            //byte[] GetFile(string s)
+            //{
+            //    System.IO.File.ReadAllBytes(s);
+            //    System.IO.FileStream fs = System.IO.File.OpenRead(s);
+            //    byte[] data = new byte[fs.Length];
+            //    int br = fs.Read(data, 0, data.Length);
+            //    if (br != fs.Length)
+            //        throw new System.IO.IOException(s);
+            //    return data;
+            //}
         }
     }
 }
