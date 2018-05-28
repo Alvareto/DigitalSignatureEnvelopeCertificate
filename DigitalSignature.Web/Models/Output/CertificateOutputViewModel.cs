@@ -34,6 +34,8 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string EnvelopeCryptKey { get; set; }
 
+        public CertificateOutputViewModel() { }
+
         public CertificateOutputViewModel(byte[] signature, byte[] data, byte[] key, HashAlgorithmName hash, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Certificate";

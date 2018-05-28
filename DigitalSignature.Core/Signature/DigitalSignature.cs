@@ -22,17 +22,9 @@ namespace DigitalSignature.Core.Signature
         {
             var inputHashText = _hashAlgorithm.Calculate(input);
 
-            // var privateKey from file
-            // sažetak se kriptira privatnim ključem pošiljatelja
-            Signature = _algorithm.Sign(inputHashText); //, _algorithm.PrivateKey);
-            //RSA.KriptirajRSA(hash, privatniKljuc.modul, privatniKljuc.eksponent);
+            Signature = _algorithm.Sign(input, _hashAlgorithm); //, _algorithm.PrivateKey);
+
             return Signature;
-
-            // from_bytes_2_hex(from_base64string_2_bytes)
-
-            // clean file
-            // write transformed signature to file
-
         }
 
         public bool Check(byte[] input) //=envelope , string signature, string publicKey
@@ -43,7 +35,7 @@ namespace DigitalSignature.Core.Signature
             //var signature from file
 
             // var publicKey from file :: 
-            return _algorithm.VerifySignature(inputHashText, Signature);
+            return _algorithm.VerifySignature(input, Signature, _hashAlgorithm);
             //DekriptirajRSA(Convert.ToBase64String(Funkcije.FromHexToByte(potpisP)), javniKljuc.modul, javniKljuc.eksponent);
 
             //return inputHashText == outputDecryptedHashText;

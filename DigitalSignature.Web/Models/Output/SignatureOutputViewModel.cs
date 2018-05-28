@@ -25,6 +25,8 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public List<string> KeyLength { get; set; }
 
+        public SignatureOutputViewModel() { }
+
         public SignatureOutputViewModel(byte[] signature, HashAlgorithmName hash, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Signature";

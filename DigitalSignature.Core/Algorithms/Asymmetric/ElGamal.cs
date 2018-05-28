@@ -1,4 +1,5 @@
 ﻿using System;
+using DigitalSignature.Core.Algorithms.Hash;
 using ElGamalExt;
 
 namespace DigitalSignature.Core.Algorithms.Asymmetric
@@ -24,8 +25,7 @@ namespace DigitalSignature.Core.Algorithms.Asymmetric
 
             var cipherText = encryptAlgorithm.EncryptData(plainText);
 
-            // TODO: return byte[] implementation
-            throw new NotImplementedException();
+            return cipherText;
         }
 
         public byte[] Decrypt(byte[] cipherText)
@@ -35,16 +35,15 @@ namespace DigitalSignature.Core.Algorithms.Asymmetric
 
             var candidatePlainText = decryptAlgorithm.DecryptData(cipherText);
 
-            // TODO: return byte[] implementation
-            throw new NotImplementedException();
+            return candidatePlainText;
         }
 
-        public byte[] Sign(byte[] hashCode)
+        public byte[] Sign(byte[] hashCode, IHashAlgorithm hash)
         {
             return Algorithm.Sign(hashCode);
         }
 
-        public bool VerifySignature(byte[] hashCode, byte[] signature)
+        public bool VerifySignature(byte[] hashCode, byte[] signature, IHashAlgorithm hash)
         {
             return Algorithm.VerifySignature(hashCode, signature);
         }

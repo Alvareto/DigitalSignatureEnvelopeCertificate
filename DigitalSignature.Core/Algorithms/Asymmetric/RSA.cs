@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using DigitalSignature.Core.Algorithms.Hash;
 
 namespace DigitalSignature.Core.Algorithms.Asymmetric
 {
@@ -44,18 +45,17 @@ namespace DigitalSignature.Core.Algorithms.Asymmetric
             return decrypted;
         }
 
-        public byte[] Sign(byte[] hashCode)
+        public byte[] Sign(byte[] hashCode, IHashAlgorithm hash)
         {
-            var sha256 = new SHA1CryptoServiceProvider();
-            Algorithm.SignData(hashCode, sha256);
+            //var sha256 = new SHA1CryptoServiceProvider();
 
-            return Algorithm.SignHash(hashCode, "SHA1");
+            return Algorithm.SignData(hashCode, hash.CryptoServiceProvider); // Algorithm.SignHash(hashCode, "SHA1");
         }
 
-        public bool VerifySignature(byte[] hashCode, byte[] signature)
+        public bool VerifySignature(byte[] hashCode, byte[] signature, IHashAlgorithm hash)
         {
-            var sha256 = new SHA1CryptoServiceProvider();
-            return Algorithm.VerifyData(hashCode, sha256, signature);
+            //var sha256 = new SHA1CryptoServiceProvider();
+            return Algorithm.VerifyData(hashCode, hash.CryptoServiceProvider, signature);
         }
 
         public void Dispose()

@@ -30,6 +30,8 @@ namespace DigitalSignature.Web.Models.Output
         /// </summary>
         public string EnvelopeCryptKey { get; set; }
 
+        public EnvelopeOutputViewModel() { }
+
         public EnvelopeOutputViewModel(byte[] data, byte[] key, SymmetricAlgorithmName sym, SymmetricAlgorithmKey symKey, AsymmetricAlgorithmName alg, AsymmetricAlgorithmKey algKey, string file)
         {
             this.Description = "Envelope";

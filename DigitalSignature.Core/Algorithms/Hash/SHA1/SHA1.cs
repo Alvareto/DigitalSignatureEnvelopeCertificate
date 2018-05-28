@@ -6,6 +6,7 @@ namespace DigitalSignature.Core.Algorithms.Hash.SHA1
     {
         protected readonly SHA1CryptoServiceProvider Algorithm;
         public HashAlgorithmName AlgorithmName => HashAlgorithmName.SHA1;
+        public object CryptoServiceProvider => Algorithm;
 
         public SHA1()
         {

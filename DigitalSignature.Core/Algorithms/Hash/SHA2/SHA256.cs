@@ -6,6 +6,7 @@ namespace DigitalSignature.Core.Algorithms.Hash.SHA2
     {
         protected readonly SHA256CryptoServiceProvider Algorithm;
         public HashAlgorithmName AlgorithmName => HashAlgorithmName.SHA256;
+        public object CryptoServiceProvider => Algorithm;
 
         public SHA256()
         {
