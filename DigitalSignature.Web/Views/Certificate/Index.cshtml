@@ -1,0 +1,58 @@
+﻿@model DigitalSignature.Web.Models.Output.CertificateOutputViewModel
+
+@{
+    ViewBag.Title = "View";
+}
+
+<h2>View</h2>
+
+<div>
+    <h4>CertificateOutputViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Signature)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Signature)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FileName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FileName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EnvelopeData)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EnvelopeData)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EnvelopeCryptKey)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EnvelopeCryptKey)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")*@
+</p>
