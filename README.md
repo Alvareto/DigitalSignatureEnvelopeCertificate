@@ -1,7 +1,7 @@
 # DigitalSignatureEnvelopeCertificate
 College project (Advanced Operating Systems) - Cryptography ASP.NET application (2017/2018)
 
-Includes generating Digital Signature, Digital Envelope and Digital Certificate using any of the following algorithms:
+Includes generating Digital Signature, Digital Envelope and Digital Certificate using any combination of the following algorithms:
 ## Asymmetric
 - RSA
 - ElGamal
